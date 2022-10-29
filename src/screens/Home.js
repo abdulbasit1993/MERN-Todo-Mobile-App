@@ -1,8 +1,11 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, Text, StyleSheet, SafeAreaView, FlatList} from 'react-native';
 import Header from '../components/Header';
 import TodoItem from '../components/TodoItem';
 import AddTodo from '../components/AddTodo';
+import {getCall} from '../config/apiService';
+import {BASE_URL} from '../config/apiURL';
+import {GET_TODOS} from '../config/apiEndPoints';
 
 const dummyData = [
   {
@@ -28,6 +31,17 @@ const dummyData = [
 ];
 
 const Home = () => {
+  const [todoData, setTodoData] = useState([]);
+
+  useEffect(() => {
+    getCall(`${BASE_URL}${GET_TODOS}`)
+      .then(res => {
+        console.log('response data getTodos ====> ', res.data);
+        setTodoData(res.data);
+      })
+      .catch(err => console.log(err));
+  }, []);
+
   return (
     <SafeAreaView>
       <Header title="Todo List" />
@@ -36,8 +50,8 @@ const Home = () => {
 
       <View>
         <FlatList
-          data={dummyData}
-          renderItem={({item}) => <TodoItem name={item.name} />}
+          data={todoData}
+          renderItem={({item}) => <TodoItem name={item.title} />}
         />
       </View>
     </SafeAreaView>

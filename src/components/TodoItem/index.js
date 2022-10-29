@@ -6,7 +6,7 @@ import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIc
 const TodoItem = ({name}) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.itemText}>Todo {name}</Text>
+      <Text style={styles.itemText}>{name}</Text>
       <TouchableOpacity>
         <MaterialCommunityIcon
           name="delete"
