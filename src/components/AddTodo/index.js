@@ -8,11 +8,16 @@ import {
 } from 'react-native';
 import {colors} from '../../utils/colors';
 
-const AddTodo = () => {
+const AddTodo = ({value, onChangeText, onAddPress}) => {
   return (
     <View style={styles.container}>
-      <TextInput placeholder="Type a todo task..." style={styles.inputbox} />
-      <TouchableOpacity style={styles.addBtn}>
+      <TextInput
+        value={value}
+        onChangeText={onChangeText}
+        placeholder="Type a todo here..."
+        style={styles.inputbox}
+      />
+      <TouchableOpacity style={styles.addBtn} onPress={onAddPress}>
         <Text style={styles.btnText}>Add</Text>
       </TouchableOpacity>
     </View>
