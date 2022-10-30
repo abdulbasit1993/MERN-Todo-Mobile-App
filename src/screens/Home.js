@@ -1,11 +1,20 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, StyleSheet, SafeAreaView, FlatList} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  FlatList,
+  Alert,
+  Keyboard,
+} from 'react-native';
 import Header from '../components/Header';
 import TodoItem from '../components/TodoItem';
 import AddTodo from '../components/AddTodo';
-import {getCall} from '../config/apiService';
+import Loader from '../components/Loader';
+import {getCall, postCall, deleteCall} from '../config/apiService';
 import {BASE_URL} from '../config/apiURL';
-import {GET_TODOS} from '../config/apiEndPoints';
+import {GET_TODOS, CREATE_TODO, DELETE_TODO} from '../config/apiEndPoints';
 
 const dummyData = [
   {
@@ -31,29 +40,110 @@ const dummyData = [
 ];
 
 const Home = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [todoData, setTodoData] = useState([]);
+  const [todoTitle, setTodoTitle] = useState('');
 
-  useEffect(() => {
-    getCall(`${BASE_URL}${GET_TODOS}`)
+  const getTodos = async () => {
+    setIsLoading(true);
+    await getCall(`${BASE_URL}${GET_TODOS}`)
       .then(res => {
+        if (res.status == 200) {
+          setIsLoading(false);
+        }
         console.log('response data getTodos ====> ', res.data);
         setTodoData(res.data);
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        console.log(err);
+        setIsLoading(false);
+      });
+  };
+
+  const handleSubmit = async () => {
+    if (todoTitle != '') {
+      console.log('calling POST API..');
+
+      setIsLoading(true);
+
+      const data = {
+        title: todoTitle,
+        content: '',
+      };
+
+      await postCall(`${BASE_URL}${CREATE_TODO}`, data)
+        .then(res => {
+          console.log('response data createTodo =======> ', res);
+          if (res.status == 200) {
+            setIsLoading(false);
+          } else {
+            setIsLoading(false);
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          setIsLoading(false);
+        });
+    } else {
+      Alert.alert('Error', 'Please enter a todo first!');
+    }
+    setTodoTitle('');
+    Keyboard.dismiss();
+    getTodos();
+  };
+
+  const handleDeleteTodo = todoItem => {
+    console.log('item to delete...', todoItem);
+    Alert.alert(
+      'Delete todo',
+      `Are you sure you want to delete "${todoItem?.title}"?`,
+      [
+        {
+          text: 'Yes',
+          onPress: async () => {
+            await deleteCall(`${BASE_URL}${DELETE_TODO}/${todoItem?._id}`)
+              .then(res => console.log('Deleted successfully! ', res.data))
+              .catch(err => console.log('Error: ', err));
+
+            getTodos();
+          },
+        },
+        {
+          text: 'No',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+      ],
+    );
+  };
+
+  useEffect(() => {
+    getTodos();
   }, []);
 
   return (
     <SafeAreaView>
       <Header title="Todo List" />
 
-      <AddTodo />
+      <AddTodo
+        value={todoTitle}
+        onChangeText={text => setTodoTitle(text)}
+        onAddPress={handleSubmit}
+      />
 
-      <View>
+      {isLoading ? (
+        <Loader />
+      ) : (
         <FlatList
           data={todoData}
-          renderItem={({item}) => <TodoItem name={item.title} />}
+          renderItem={({item}) => (
+            <TodoItem
+              name={item.title}
+              onDeletePress={() => handleDeleteTodo(item)}
+            />
+          )}
         />
-      </View>
+      )}
     </SafeAreaView>
   );
 };

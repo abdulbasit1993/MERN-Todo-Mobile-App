@@ -3,11 +3,11 @@ import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {colors} from '../../utils/colors';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const TodoItem = ({name}) => {
+const TodoItem = ({name, onDeletePress}) => {
   return (
     <View style={styles.container}>
       <Text style={styles.itemText}>{name}</Text>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={onDeletePress}>
         <MaterialCommunityIcon
           name="delete"
           style={{fontSize: 26, color: colors.RED}}
