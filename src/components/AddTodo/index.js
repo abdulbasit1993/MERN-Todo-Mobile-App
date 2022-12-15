@@ -15,6 +15,7 @@ const AddTodo = ({value, onChangeText, onAddPress}) => {
         value={value}
         onChangeText={onChangeText}
         placeholder="Type a todo here..."
+        placeholderTextColor={colors.BLACK}
         style={styles.inputbox}
       />
       <TouchableOpacity style={styles.addBtn} onPress={onAddPress}>
@@ -34,6 +35,7 @@ const styles = StyleSheet.create({
   inputbox: {
     borderWidth: 1,
     borderColor: colors.BLACK,
+    color: colors.BLACK,
     width: '80%',
   },
   addBtn: {
