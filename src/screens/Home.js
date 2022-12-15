@@ -7,6 +7,7 @@ import {
   FlatList,
   Alert,
   Keyboard,
+  ToastAndroid
 } from 'react-native';
 import Header from '../components/Header';
 import TodoItem from '../components/TodoItem';
@@ -39,7 +40,7 @@ const dummyData = [
   },
 ];
 
-const Home = () => {
+const Home = ({navigation}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [todoData, setTodoData] = useState([]);
   const [todoTitle, setTodoTitle] = useState('');
@@ -56,6 +57,7 @@ const Home = () => {
       })
       .catch(err => {
         console.log(err);
+        ToastAndroid.show(`Error: ${err}`, ToastAndroid.SHORT);
         setIsLoading(false);
       });
   };
@@ -122,7 +124,7 @@ const Home = () => {
   }, []);
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={styles.container}>
       <Header title="Todo List" />
 
       <AddTodo
@@ -139,6 +141,7 @@ const Home = () => {
           renderItem={({item}) => (
             <TodoItem
               name={item.title}
+              onTodoPress={() => {navigation.navigate('TodoDetailScreen', {data: item})}}
               onDeletePress={() => handleDeleteTodo(item)}
             />
           )}
@@ -148,6 +151,11 @@ const Home = () => {
   );
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  }
+});
 
 export default Home;
